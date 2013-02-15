@@ -1,15 +1,23 @@
 var SS = (function () {
   function Secret(id, text) {
+    var that = this;
+
     this.id = null;
     this.text = text;
 
-    this.save = function () {
+    this.save = function (callback) {
       $.post("/secrets.json", {
-        id: this.id,
-        text: this.text
+        secret: {
+          id: this.id,
+          text: this.text
+        }
       }, function (response) {
         console.log(response);
-        this.id = response.id;
+        that.id = response.id;
+
+        if (callback) {
+          callback();
+        }
       });
     }
   };
@@ -25,7 +33,9 @@ var SS = (function () {
             datum.id, datum.text));
         });
 
-        callback();
+        if (callback) {
+          callback();
+        }
       }
     );
   };
