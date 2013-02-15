@@ -2,7 +2,7 @@ var SS = (function () {
   function Secret(id, text) {
     var that = this;
 
-    this.id = null;
+    this.id = id;
     this.text = text;
 
     this.save = function (callback) {
@@ -12,7 +12,6 @@ var SS = (function () {
           text: this.text
         }
       }, function (response) {
-        console.log(response);
         that.id = response.id;
 
         if (callback) {
@@ -42,8 +41,6 @@ var SS = (function () {
 
   function SecretsLister(el, secrets) {
     this.render = function () {
-      el.empty();
-
       var ul = $("<ul></ul");
       _.each(secrets, function (secret) {
         ul.append($("<li></li>").text(secret.text));
