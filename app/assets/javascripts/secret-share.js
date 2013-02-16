@@ -50,8 +50,22 @@ var SS = (function () {
     };
   };
 
+  function SecretsCreator(textField, button, callback) {
+    var that = this;
+
+    this.bind = function () {
+      $(button).click(that._submit);
+    }
+
+    this._submit = function () {
+      var secret = new Secret(null, textField.val());
+      secret.save(callback);
+    }
+  }
+
   return {
     Secret: Secret,
-    SecretsLister: SecretsLister
+    SecretsLister: SecretsLister,
+    SecretsCreator: SecretsCreator
   };
 })();
