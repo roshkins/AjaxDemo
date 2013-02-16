@@ -33,14 +33,16 @@ var SS = (function () {
         });
 
         if (callback) {
-          callback();
+          callback(Secret.all);
         }
       }
     );
   };
 
-  function SecretsLister(el, secrets) {
-    this.render = function () {
+  function SecretsLister(el, fetchSecrets) {
+    var that = this;
+
+    this._insertSecrets = function (secrets) {
       var ul = $("<ul></ul");
       _.each(secrets, function (secret) {
         ul.append($("<li></li>").text(secret.text));
@@ -48,6 +50,10 @@ var SS = (function () {
 
       $(el).html(ul);
     };
+
+    this.render = function () {
+      fetchSecrets(that._insertSecrets);
+    }
   };
 
   function SecretsCreator(textField, button, callback) {
