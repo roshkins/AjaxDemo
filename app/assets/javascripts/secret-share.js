@@ -12,18 +12,19 @@ var SS = (function () {
         id: this.id,
         text: this.text
       }
-    }, function (response) {
+    }, function () {
       // TODO: We should handle potential errors.
 
       that.id = response.id;
 
-      if (callback) {
-        callback();
-      }
+      _(saveCallbacks).each(function (saveCallback) {
+        saveCallback();
+      });
     });
   };
 
   Secret.all = [];
+  Secret.saveCallbacks = [];
   Secret.fetchAll = function (callback) {
     $.getJSON(
       "/secrets.json",
@@ -89,11 +90,11 @@ var SS = (function () {
   SecretFormView.submit = function () {
     var that = this;
 
-    var secret = new Secret(null, that.$textField.val());
-    secret.save(callback);
-
+    var newSecret = new Secret(null, that.$textField.val());
     // clear text field
     $textField.val("");
+
+    callback(newSecret);
   };
 
   return {
