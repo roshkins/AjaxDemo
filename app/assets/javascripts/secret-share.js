@@ -9,15 +9,16 @@ var SS = (function () {
 
     $.post("/secrets.json", {
       secret: {
-        id: this.id,
-        text: this.text
+        id: that.id,
+        text: that.text
       }
-    }, function () {
+    }, function (response) {
       // TODO: We should handle potential errors.
 
       that.id = response.id;
+      Secret.all.push(that);
 
-      _(saveCallbacks).each(function (saveCallback) {
+      _(Secret.saveCallbacks).each(function (saveCallback) {
         saveCallback();
       });
     });
@@ -41,60 +42,55 @@ var SS = (function () {
     );
   };
 
-  function SecretsListView(el, fetchSecretsFn) {
+  function SecretsView(el, fetchSecretsFn) {
     this.$el = $(el);
     this.fetchSecretsFn = fetchSecretsFn;
   }
 
-  SecretsListView.prototype._insertSecrets = function (secrets) {
+  SecretsView.prototype._insertSecrets = function (secrets) {
+  };
+
+  SecretsView.prototype.render = function () {
+    var that = this;
+
     var ul = $("<ul></ul");
-    _.each(secrets, function (secret) {
+    _.each(Secret.all, function (secret) {
       ul.append($("<li></li>").text(secret.text));
     });
 
-    this.$el.html(ul);
-  };
-
-  SecretsListView.prototype.render = function () {
-    var that = this;
-
-    // Expect fetchSecretsFn to fetch secrets, then pass them to
-    // a callback: that._insertSecrets.
-    this.fetchSecretsFn(function () {
-      // notice that I needed to use the anonymous function trick.
-      that._insertSecrets();
-    });
+    that.$el.html(ul);
   };
 
   function SecretFormView(textField, button, callback) {
     this.$textField = $(textField);
     this.$button = $(button);
+    this.callback = callback;
   }
 
-  SecretFormView.bind = function () {
+  SecretFormView.prototype.bind = function () {
     var that = this;
 
     that.buttonClickHandler = function () {
       that.submit();
     };
-    that.$button.click(this.buttonClickHandler);
+    that.$button.click(that.buttonClickHandler);
   };
 
-  SecretFormView.unbind = function () {
+  SecretFormView.prototype.unbind = function () {
     var that = this;
 
     that.$buttion.off('click', buttonClickHandler);
     delete that.buttonClickHandler;
   }
 
-  SecretFormView.submit = function () {
+  SecretFormView.prototype.submit = function () {
     var that = this;
 
     var newSecret = new Secret(null, that.$textField.val());
     // clear text field
-    $textField.val("");
+    that.$textField.val("");
 
-    callback(newSecret);
+    that.callback(newSecret);
   };
 
   return {
