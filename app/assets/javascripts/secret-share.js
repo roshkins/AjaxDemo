@@ -1,24 +1,26 @@
 var SS = (function () {
   function Secret(id, text) {
-    var that = this;
-
     this.id = id;
     this.text = text;
+  }
 
-    this.save = function (callback) {
-      $.post("/secrets.json", {
-        secret: {
-          id: this.id,
-          text: this.text
-        }
-      }, function (response) {
-        that.id = response.id;
+  Secret.prototype.save = function (callback) {
+    var that = this;
 
-        if (callback) {
-          callback();
-        }
-      });
-    }
+    $.post("/secrets.json", {
+      secret: {
+        id: this.id,
+        text: this.text
+      }
+    }, function (response) {
+      // TODO: We should handle potential errors.
+
+      that.id = response.id;
+
+      if (callback) {
+        callback();
+      }
+    });
   };
 
   Secret.all = [];
@@ -28,8 +30,7 @@ var SS = (function () {
       function (data) {
         Secret.all = [];
         _.each(data, function (datum) {
-          Secret.all.push(new Secret(
-            datum.id, datum.text));
+          Secret.all.push(new Secret(datum.id, datum.text));
         });
 
         if (callback) {
@@ -39,39 +40,65 @@ var SS = (function () {
     );
   };
 
-  function SecretsLister(el, fetchSecrets) {
-    var that = this;
+  function SecretsListView(el, fetchSecretsFn) {
+    this.$el = $(el);
+    this.fetchSecretsFn = fetchSecretsFn;
+  }
 
-    this._insertSecrets = function (secrets) {
-      var ul = $("<ul></ul");
-      _.each(secrets, function (secret) {
-        ul.append($("<li></li>").text(secret.text));
-      });
+  SecretsListView.prototype._insertSecrets = function (secrets) {
+    var ul = $("<ul></ul");
+    _.each(secrets, function (secret) {
+      ul.append($("<li></li>").text(secret.text));
+    });
 
-      $(el).html(ul);
-    };
-
-    this.render = function () {
-      fetchSecrets(that._insertSecrets);
-    }
+    this.$el.html(ul);
   };
 
-  function SecretsCreator(textField, button, callback) {
+  SecretsListView.prototype.render = function () {
     var that = this;
 
-    this.bind = function () {
-      $(button).click(that._submit);
-    }
+    // Expect fetchSecretsFn to fetch secrets, then pass them to
+    // a callback: that._insertSecrets.
+    this.fetchSecretsFn(function () {
+      // notice that I needed to use the anonymous function trick.
+      that._insertSecrets();
+    });
+  };
 
-    this._submit = function () {
-      var secret = new Secret(null, textField.val());
-      secret.save(callback);
-    }
+  function SecretFormView(textField, button, callback) {
+    this.$textField = $(textField);
+    this.$button = $(button);
   }
+
+  SecretFormView.bind = function () {
+    var that = this;
+
+    that.buttonClickHandler = function () {
+      that.submit();
+    };
+    that.$button.click(this.buttonClickHandler);
+  };
+
+  SecretFormView.unbind = function () {
+    var that = this;
+
+    that.$buttion.off('click', buttonClickHandler);
+    delete that.buttonClickHandler;
+  }
+
+  SecretFormView.submit = function () {
+    var that = this;
+
+    var secret = new Secret(null, that.$textField.val());
+    secret.save(callback);
+
+    // clear text field
+    $textField.val("");
+  };
 
   return {
     Secret: Secret,
-    SecretsLister: SecretsLister,
-    SecretsCreator: SecretsCreator
+    SecretsView: SecretsView,
+    SecretFormView: SecretFormView
   };
 })();
