@@ -4,7 +4,7 @@ var SS = (function () {
     this.text = text;
   }
 
-  Secret.prototype.save = function (callback) {
+  Secret.prototype.save = function () {
     var that = this;
 
     $.post("/secrets.json", {
@@ -18,15 +18,15 @@ var SS = (function () {
       that.id = response.id;
       Secret.all.push(that);
 
-      _(Secret.saveCallbacks).each(function (saveCallback) {
-        saveCallback();
+      _(Secret.callbacks).each(function (callback) {
+        callback();
       });
     });
   };
 
   Secret.all = [];
-  Secret.saveCallbacks = [];
-  Secret.fetchAll = function (callback) {
+  Secret.callbacks = [];
+  Secret.fetchAll = function () {
     $.getJSON(
       "/secrets.json",
       function (data) {
@@ -35,20 +35,21 @@ var SS = (function () {
           Secret.all.push(new Secret(datum.id, datum.text));
         });
 
-        if (callback) {
-          callback(Secret.all);
-        }
+        _(Secret.callbacks).each(function (callback) {
+          callback();
+        });
       }
     );
   };
 
-  function SecretsView(el, fetchSecretsFn) {
-    this.$el = $(el);
-    this.fetchSecretsFn = fetchSecretsFn;
-  }
+  function SecretsView(el) {
+    var that = this;
+    that.$el = $(el);
 
-  SecretsView.prototype._insertSecrets = function (secrets) {
-  };
+    Secret.callbacks.push(function () {
+      that.render();
+    });
+  }
 
   SecretsView.prototype.render = function () {
     var that = this;
@@ -76,6 +77,8 @@ var SS = (function () {
     that.$button.click(that.buttonClickHandler);
   };
 
+  // we would call this eif we wanted to remove the SecretFormView
+  // from the DOM.
   SecretFormView.prototype.unbind = function () {
     var that = this;
 
