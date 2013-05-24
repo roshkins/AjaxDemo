@@ -54,7 +54,7 @@ var SS = (function () {
   SecretsView.prototype.render = function () {
     var that = this;
 
-    var ul = $("<ul></ul");
+    var ul = $("<ul></ul>");
     _.each(Secret.all, function (secret) {
       ul.append($("<li></li>").text(secret.text));
     });
@@ -82,7 +82,7 @@ var SS = (function () {
   SecretFormView.prototype.unbind = function () {
     var that = this;
 
-    that.$buttion.off('click', buttonClickHandler);
+    that.$button.off('click', buttonClickHandler);
     delete that.buttonClickHandler;
   }
 
