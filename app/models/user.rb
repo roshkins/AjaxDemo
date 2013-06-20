@@ -1,9 +1,11 @@
 class User < ActiveRecord::Base
   attr_accessible :username, :password
+  attr_reader :password
   
-  validates :username, :password_token, :presence => true
+  validates :username, :password_digest, :presence => true
   
   def password=(password)
-    self.password_token = BCrypt.create(password)
+    @password = password
+    self.password_digest = BCrypt::Password.create(password)
   end
 end
