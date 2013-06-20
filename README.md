@@ -9,6 +9,12 @@ models: `User` and `Secret`. I've also built `UsersController` and
 Write a `/users/123/secrets/new` form. Use `form_for`. You'll need to
 create a nested route.
 
+Clarification: When you post a secret, you are sharing it to someone's
+'wall'. The recipient is going to be the user who's id is in the
+url. For example, `/users/123/secrets/new` is going to create a secret
+where `User` 123 is the recipient. You should not need any hidden
+fields or other form fields to accomplish this.
+
 ## Phase II: Add friendships (remote `button_to`)
 
 Write a `Friendship` model to join `User` to `User`. Friendship is
