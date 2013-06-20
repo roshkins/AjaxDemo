@@ -31,6 +31,20 @@ change text to "Friended".
 When the template is first rendered, appropriately grey-out the button
 if the user has already been friended.
 
+**NB**: To change the text on a clicked button, you will have to find
+the button. Here are some hints:
+
+* the `Event` object that is passed to your handler (check both `$.on`
+  and `$.Event` contains a `currentTarget` attribute.
+    * The target is also available as `this` inside the handler.
+* You can use the `find` method to do a CSS selector search for
+  elements **nested inside** a jQuery element.
+* There are two ways to find a submit button inside a form:
+    0. Give the button an id or class and look for that.
+    0. Search for `input` tags where the `type` is `"submit"`.
+    0. Try both ways. Definitely lookup how to do a CSS search by
+       attribute value.
+
 ## Phase III: Remove friendships
 
 All things must end; you grow apart. You're still proud of your
