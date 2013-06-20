@@ -55,6 +55,14 @@ do this is to:
 0. Lastly, your `ajax:success` method needs only to swap a class (see
    `$.toggleClass`).
 
+## Interlude: RESTful design and nested resources
+
+Notice how the friend/unfriend action has been written in terms of a
+nested `friendship` resource. This is a common pattern: take a verb
+action, think of the noun that might be created by that action, and
+nest that as a resource. This is one of the secrets to nice, RESTful
+designs.
+
 ## Phase IV: Remote secrets form
 
 We have a `/users/123/secrets/new` page that displays a form. I'd like
