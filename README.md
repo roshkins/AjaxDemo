@@ -9,7 +9,7 @@ models: `User` and `Secret`. I've also built `UsersController` and
 Write a `/users/123/secrets/new` form. Use `form_for`. You'll need to
 create a nested route.
 
-## Phase II: Add friendships
+## Phase II: Add friendships (remote `button_to`)
 
 Write a `Friendship` model to join `User` to `User`. Friendship is
 one-way in this application. Write a simple `Friendships` controller
@@ -46,3 +46,68 @@ do this is to:
    unfriend`.
 0. Lastly, your `ajax:success` method needs only to swap a class (see
    `$.toggleClass`).
+
+## Phase IV: Remote secrets form
+
+We have a `/users/123/secrets/new` page that displays a form. I'd like
+to be able to post a new secret directly from the `/users/123` page.
+
+Move the `new.html.erb` template into a partial. Make the form
+remote. Render the partial in `users/show.html.erb` page.
+
+On successful submission, add the new secret to the `ul` listing all
+the secrets. Clear the form so the user can submit again :-)
+
+## Phase V: Simple dynamic form (no nesting)
+
+Let's allow users to tag secrets when they create them. Add `Tag` and
+`SecretTagging` models. Set up appropriate associations.
+
+Because `Secret` `has_many :tags, :through => :secret_taggings`, we
+can use `Secret#tag_ids=`. We saw how to tag a secret with many tags
+through a set of checkboxes. But what if there are lots of tags to
+choose from? Do we really want to present 100 checkboxes?
+
+Instead, let's present a single `select` tag. Let's also present a
+link "Add another tag". Clicking this link should invoke a JS function
+that will add another `select` tag.
+
+A few hints.
+
+### JSON data script trick
+
+Creating new `select` tags means you'll have to create `option` tags:
+one for each `Tag`. To give your JavaScript code access to the list of
+`Tag`s, I'd store the JSONified `Tag`s in an HTML script tag:
+
+```html+erb
+<script type="application/json" id="tags_json" >
+<%= Tag.all.to_json %>
+</script>
+```
+
+You can then use these client-side via:
+
+```javascript
+var tag_objects = JSON.parse($("#tags_json").html());
+```
+
+### Underscore template trick
+
+I'd use an underscore template
+
+```html+erb
+<script type="text/template">
+<% unique_num = (new Date).getTime() %>
+<% input_id = "secret_tag_ids_" + unique_num %>
+<% name = "secret[tag_ids][]" %>
+
+<label for="<%= input_id %>">Tag</label>
+<select name="<%= name %>" id="<%= input_id %>">
+
+</select>
+
+</script>
+```
+
+* nested form
