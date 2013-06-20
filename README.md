@@ -100,9 +100,10 @@ another select box into the form. Since this involves building HTML to
 inject into the form, we can use an underscore template.
 
 I would make a partial called `secrets/_tag_select.html`. Note that I
-don't say `erb`, since this is going to contain an underscore
-template. The template should not be processed server-side, but
-instead be processed client-side.
+don't say `.erb`, since this is going to contain an underscore
+template. The template should not be processed server-side; we want to
+send the template, unprocessed, to the client, so that it can be
+rendered client-side by underscore.
 
 ```html+erb
 <script type="text/template" id="tag_select">
