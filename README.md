@@ -54,8 +54,9 @@ do this is to:
 We have a `/users/123/secrets/new` page that displays a form. I'd like
 to be able to post a new secret directly from the `/users/123` page.
 
-Move the `new.html.erb` template into a partial. Make the form
-remote. Render the partial in `users/show.html.erb` page.
+Move the `new.html.erb` template into a partial (perhaps
+`_form.html.erb`). Make the form remote. Render the partial in
+`users/show.html.erb` page.
 
 On successful submission, add the new secret to the `ul` listing all
 the secrets. Clear the form so the user can submit again :-)
@@ -74,8 +75,6 @@ Instead, let's present a single `select` tag. Let's also present a
 link "Add another tag". Clicking this link should invoke a JS function
 that will add another `select` tag.
 
-A few hints.
-
 ### JSON data script trick
 
 Creating new `select` tags means you'll have to create `option` tags:
@@ -84,7 +83,7 @@ one for each `Tag`. To give your JavaScript code access to the list of
 
 ```html+erb
 <script type="application/json" id="tags_json" >
-<%= Tag.all.to_json %>
+  <%= Tag.all.to_json %>
 </script>
 ```
 
@@ -96,20 +95,44 @@ var tag_objects = JSON.parse($("#tags_json").html());
 
 ### Underscore template trick
 
-I'd use an underscore template
+When the user clicks the "Add another tag" link, we need to insert
+another select box into the form. Since this involves building HTML to
+inject into the form, we can use an underscore template.
+
+I would make a partial called `secrets/_tag_select.html`. Note that I
+don't say `erb`, since this is going to contain an underscore
+template. The template should not be processed server-side, but
+instead be processed client-side.
 
 ```html+erb
-<script type="text/template">
-<% unique_num = (new Date).getTime() %>
-<% input_id = "secret_tag_ids_" + unique_num %>
-<% name = "secret[tag_ids][]" %>
+<script type="text/template" id="tag_select">
+  <% unique_num = (new Date).getTime() %>
+  <% input_id = "secret_tag_ids_" + unique_num %>
+  <% name = "secret[tag_ids][]" %>
 
-<label for="<%= input_id %>">Tag</label>
-<select name="<%= name %>" id="<%= input_id %>">
-
-</select>
-
+  // code for select and options...
 </script>
 ```
 
-* nested form
+Now, inside your `secrets/_form.html.erb` partial, I would add:
+
+```html+erb
+<%= render :partial => "tag_select" %>
+
+<%= form_for(@secret) do |f| %>
+  <!-- ... -->
+<% end %>
+```
+
+Finally, add a link tag, and install a click handler. Your handler
+could run something like:
+
+```javascript
+function addAnotherTagHandler() {
+  var template_code = $("#tag_select").html();
+  var template_fn = _.template(template_code);
+  var rendered_content = template_fn();
+
+  $("ul.tag_selects").append(rendered_content);
+}
+```
