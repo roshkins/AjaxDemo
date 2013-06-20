@@ -6,7 +6,7 @@ models: `User` and `Secret`. I've also built `UsersController` and
 
 ## Phase I: `form_for` secrets
 
-Write a `/user/secrets/new` form. Use `form_for`. You'll need to
+Write a `/users/123/secrets/new` form. Use `form_for`. You'll need to
 create a nested route.
 
 ## Phase II: Add friendships
