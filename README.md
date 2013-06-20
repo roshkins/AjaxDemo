@@ -13,7 +13,9 @@ create a nested route.
 
 Write a `Friendship` model to join `User` to `User`. Friendship is
 one-way in this application. Write a simple `Friendships` controller
-(the only action needed is `create`, I think).
+(the only action needed is `create`, I think). Nest a `friendship`
+resource inside the `users` resource. Friending someone should be as
+simple as POSTing to `/users/123/friendship`.
 
 On the `/users` page, list all users, and add a `friend` button for
 each. Make this button remote. When clicked, change the button text to
