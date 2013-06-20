@@ -124,7 +124,8 @@ rendered client-side by underscore.
 Now, inside your `secrets/_form.html.erb` partial, I would add:
 
 ```html+erb
-<%= render :partial => "tag_select" %>
+<!-- we'll learn a better way to include JS templates soon. Promise! -->
+<%= File.read("./app/views/secrets/_tag_select.html").html_safe %>
 
 <%= form_for(@secret) do |f| %>
   <!-- ... -->
