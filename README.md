@@ -99,62 +99,17 @@ that will add another `select` tag.
 
 Creating new `select` tags means you'll have to create `option` tags:
 one for each `Tag`. To give your JavaScript code access to the list of
-`Tag`s, I'd store the JSONified `Tag`s in an HTML script tag:
+`Tag`s, I'd store the JSONified `Tag`s in an HTML script tag. Check
+out the [bootstrapping data][bootstrapping-data] chapter for hints.
 
-```html+erb
-<script type="application/json" id="tags_json" >
-  <%= Tag.all.to_json %>
-</script>
-```
-
-You can then use these client-side via:
-
-```javascript
-var tag_objects = JSON.parse($("#tags_json").html());
-```
+[bootstrapping-data]: https://github.com/appacademy/js-curriculum/blob/master/client-side-js/bootstrapping-data.md
 
 ### Underscore template trick
 
 When the user clicks the "Add another tag" link, we need to insert
 another select box into the form. Since this involves building HTML to
-inject into the form, we can use an underscore template.
+inject into the form, we can use an underscore template. Recall how to
+do this by referring to the
+[underscore templates][underscore-templates] reading.
 
-I would make a partial called `secrets/_tag_select.html`. Note that I
-don't say `.erb`, since this is going to contain an underscore
-template. The template should not be processed server-side; we want to
-send the template, unprocessed, to the client, so that it can be
-rendered client-side by underscore.
-
-```html+erb
-<script type="text/template" id="tag_select">
-  <% unique_num = (new Date).getTime() %>
-  <% input_id = "secret_tag_ids_" + unique_num %>
-  <% name = "secret[tag_ids][]" %>
-
-  // code for select and options...
-</script>
-```
-
-Now, inside your `secrets/_form.html.erb` partial, I would add:
-
-```html+erb
-<!-- we'll learn a better way to include JS templates soon. Promise! -->
-<%= File.read("./app/views/secrets/_tag_select.html").html_safe %>
-
-<%= form_for(@secret) do |f| %>
-  <!-- ... -->
-<% end %>
-```
-
-Finally, add a link tag, and install a click handler. Your handler
-could run something like:
-
-```javascript
-function addAnotherTagHandler() {
-  var template_code = $("#tag_select").html();
-  var template_fn = _.template(template_code);
-  var rendered_content = template_fn();
-
-  $("ul.tag_selects").append(rendered_content);
-}
-```
+[underscore-templates]: https://github.com/appacademy/js-curriculum/blob/master/client-side-js/underscore-templates.md
