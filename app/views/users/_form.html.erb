@@ -1,6 +1,12 @@
-<h1>Sign In</h1>
+<% action = (user.persisted? ? user_url(user) : users_url) %>
+<% method = (user.persisted? ? "put" : "post") %>
+<% message = (user.persisted? ? "Update user" : "Edit user") %>
 
-<form action="<%= session_url %>" method="post">
+<form action="<%= action %>" method="post">
+  <input
+     name="_method"
+     type="hidden"
+     value="<%= method %>">
   <input
      name="authenticity_token"
      type="hidden"
@@ -20,5 +26,5 @@
      type="password">
   <br>
 
-  <input type="submit" value="Log in">
+  <input type="submit" value="<%= message %>">
 </form>

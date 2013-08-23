@@ -1,20 +1,19 @@
 module SessionsHelper
   def current_user
-    return nil if session[:session_token].nil?
-
     User.find_by_session_token(session[:session_token])
   end
 
-  def login_user(username, password)
-    u = User.find_by_username(username)
+  def current_user=(user)
+    @current_user = user
+    session[:session_token] = user.session_token
+  end
 
-    return nil if u.nil?
-    return nil unless BCrypt::Password.new(u.password_digest) == password
+  def logout_current_user!
+    current_user.reset_session_token!
+    session[:session_token] = nil
+  end
 
-    u.session_token = SecureRandom::urlsafe_base64(32)
-    u.save!
-    session[:session_token] = u.session_token
-
-    u
+  def require_current_user!
+    redirect_to new_session_url if current_user.nil?
   end
 end

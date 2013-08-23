@@ -1,20 +1,23 @@
 class SessionsController < ApplicationController
   def create
-    user_attributes = params[:user]
-    @user = login_user(
-      user_attributes[:username],
-      user_attributes[:password]
+    user = User.find_by_credentials(
+      params[:user][:username],
+      params[:user][:password]
     )
-    
-    if @user
-      redirect_to user_url(@user)
+
+    if user.nil?
+      render :json => "Credentials were wrong"
     else
-      @user = User.new(user_attributes)
-      render :new
+      self.current_user = user
+      redirect_to user_url(user)
     end
   end
 
+  def destroy
+    logout_current_user!
+    redirect_to new_session_url
+  end
+
   def new
-    @user = User.new
   end
 end

@@ -2,8 +2,6 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.11'
 
-gem 'bcrypt-ruby', :require => "bcrypt"
-gem 'sqlite3'
 
 group :assets do
   gem 'coffee-rails', '~> 3.2.1'
@@ -11,6 +9,7 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
+gem 'bcrypt-ruby', :require => "bcrypt"
 gem 'jquery-rails'
+gem 'pg'
 gem 'underscore-rails'
-
