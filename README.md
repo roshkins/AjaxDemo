@@ -12,9 +12,8 @@ route.
 When you post a secret, you are sharing it to someone's 'wall'. The
 recipient's user id is in the URL. For example,
 `/users/123/secrets/new` is going to create a secret where `User` 123
-is the recipient. You should not need any hidden fields or other form
-fields to accomplish this. The sender can be found through
-`current_user`.
+is the recipient. You can use a hidden field to store the recipient's
+id. You should not need a hidden field for the poster's id.
 
 ## Phase II: Add friendships
 
@@ -24,7 +23,7 @@ one-way in this application. Write a simple `Friendships` controller
 resource inside the `users` resource. Friending someone should be as
 simple as POSTing to `/users/123/friendship`.
 
-On the `/users` page, list all users, and add a `friend` button for
+On the `/users` page, list all users, and add a "Friend" button for
 each. Since you don't need a full-fledged form (there should be no
 params to POST), your form can be empty except for the submit button.
 
@@ -32,7 +31,9 @@ Make the form a "remote" form: submit it via AJAX.
 
 When clicked, change the button text to "Friending..." and disable the
 submit button. When the request succeeds, change the text to
-"Friended".
+"Friended". Test this out by adding a `sleep(2)` to your
+`FriendshipsController#create` action. For two seconds, you should
+show "Friending...".
 
 When the template is first rendered, appropriately grey-out the button
 if a user has already been friended.
@@ -56,7 +57,7 @@ this is to:
 0. If we are friends, set a second class on your div:
    `friended`. Otherwise, set `unfriended` as the class.
 0. Write a CSS rule so that `.friend_buttons.friended friend` is
-   `visibility: hidden`. Do likewise for `.friend_buttons.unfriended
+   `display: none`. Do likewise for `.friend_buttons.unfriended
    unfriend`.
 0. Lastly, when either button is pressed, swap the class of of the div
    (see `$.toggleClass`).
