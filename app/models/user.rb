@@ -14,6 +14,10 @@ class User < ActiveRecord::Base
     :foreign_key => "recipient_id"
   )
 
+  has_many :friendships, :class_name => "Friendship",
+           :foreign_key => :friender_id, :primary_key => :id
+  has_many :friends, :through => :friendships, :source => :friendee
+
   after_initialize :ensure_session_token
 
   validates :username, :password_digest, :session_token, :presence => true

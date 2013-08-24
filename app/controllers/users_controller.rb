@@ -1,6 +1,11 @@
 class UsersController < ApplicationController
   before_filter :require_current_user!, :except => [:create, :new]
 
+  def index
+    @users = User.all - [current_user]
+    render :index
+  end
+
   def create
     @user = User.new(params[:user])
 

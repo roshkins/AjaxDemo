@@ -1,0 +1,41 @@
+<ul>
+<% @users.each do |user| %>
+<li>
+	<%= user.username %>
+	<% friend_status = (current_user.friends.include?(user)) ? 'friended' : 'unfriended' %>
+	<div class="friend_buttons <%= friend_status %>">
+
+		<div class="friend">
+			<form action="<%= user_friendship_url(user) %>" method="post" accept-charset="utf-8">
+					<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" id="authenticity_token">
+					<p><input type="submit" value="Friend" ></p>
+				</form>
+		</div>
+
+		<div class="unfriend">
+			<form action="<%= user_friendship_url(user) %>" method="post" accept-charset="utf-8">
+				<input type="hidden" name="_method" value="delete" id="_method">
+				<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" id="authenticity_token">
+				<p><input type="submit" value="Unfriend"></p>
+			</form>
+			</div>
+		</div>
+
+</li>
+<% end %>
+</ul>
+
+<script>
+	$(function() {
+	$('form').on('submit', function(event) {
+		event.preventDefault();
+		var that = this;
+
+		var data = $(this).serializeJSON();
+		$.post(that.action, data, function(responseData) {
+				console.log("success!");
+				$(that).parents('.friend_buttons').toggleClass('friended').toggleClass('unfriended');
+			});
+	});
+});
+</script>
